@@ -9,6 +9,11 @@ type BookRepoImpl struct {
 	DB *gorm.DB
 }
 
+type BookRepo interface {
+	FindByID(uint64) model.Book
+	FindAll() []model.Book
+}
+
 func (br *BookRepoImpl) FindByID(id uint64) model.Book {
 	book := model.Book{}
 	br.DB.First(&book, id)

@@ -11,7 +11,8 @@ func main() {
 	e := echo.New()
 
 	d := db.DBConnect()
-	h := handler.NewBookHandler(repo.BookRepoImpl{DB: d})
+	br := &repo.BookRepoImpl{DB: d}
+	h := handler.NewBookHandler(br)
 
 	e.GET("/books", h.GetIndex)
 	e.GET("/books/:id", h.GetDetail)

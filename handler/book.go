@@ -10,23 +10,23 @@ import (
 )
 
 type BookHandler struct {
-	bookRepo repo.BookRepoImpl
+	bookRepo repo.BookRepo
 }
 
 type resultLists struct {
-	Books []model.Book `json:"books"`
+	Books []model.Book `json:"Books"`
 }
 
-func NewBookHandler(br repo.BookRepoImpl) *BookHandler {
+func NewBookHandler(br repo.BookRepo) *BookHandler {
 	return &BookHandler{br}
 }
 
 func (bh *BookHandler) GetIndex(c echo.Context) error {
 	books := bh.bookRepo.FindAll()
-	u := &resultLists{
+	b := &resultLists{
 		Books: books,
 	}
-	return c.JSON(http.StatusOK, u)
+	return c.JSON(http.StatusOK, b)
 }
 
 func (bh *BookHandler) GetDetail(c echo.Context) error {

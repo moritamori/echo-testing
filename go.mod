@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
+	github.com/kinbiko/jsonassert v1.0.1
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/stretchr/testify v1.5.1
