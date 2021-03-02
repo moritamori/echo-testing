@@ -2,103 +2,138 @@ package handler
 
 import (
 	"net/http"
-	"net/http/httptest"
 	"testing"
+	"time"
 
-	"github.com/kinbiko/jsonassert"
 	"github.com/labstack/echo"
 	"github.com/moritamori/echo-testing/model"
-	"github.com/stretchr/testify/assert"
+	"github.com/steinfletcher/apitest"
 )
 
 type BookRepoStub struct{}
 
-func (u *BookRepoStub) FindByID(id uint64) model.Book {
-	return model.Book{
-		Title:  "Go言語の本",
-		Author: "誰か",
-	}
+func (u *BookRepoStub) FindByID(id uint64) (model.Book, error) {
+	t, _ := time.Parse("2006-01-02", "2021-01-01")
+	b := model.Book{Title: "Go言語の本", Author: "誰か"}
+	b.ID = 1
+	b.CreatedAt = t
+	b.UpdatedAt = t
+	return b, nil
 }
 
-func (u *BookRepoStub) FindAll() []model.Book {
-	books := []model.Book{}
-	books = append(books, model.Book{
-		Title:  "Go言語の本",
-		Author: "誰か",
-	})
-	books = append(books, model.Book{
-		Title:  "Go言語の本2",
-		Author: "誰か2",
-	})
-	return books
+func (u *BookRepoStub) FindAll() ([]model.Book, error) {
+	bks := []model.Book{}
+	t, _ := time.Parse("2006-01-02", "2021-01-01")
+
+	bk1 := model.Book{Title: "Go言語の本", Author: "誰か"}
+	bk1.ID = 1
+	bk1.CreatedAt = t
+	bk1.UpdatedAt = t
+	bks = append(bks, bk1)
+
+	b2 := model.Book{Title: "Go言語の本2", Author: "誰か2"}
+	b2.ID = 2
+	b2.CreatedAt = t
+	b2.UpdatedAt = t
+	bks = append(bks, b2)
+
+	return bks, nil
+}
+
+func (u *BookRepoStub) Create(b model.Book) error {
+	return nil
+}
+
+func (u *BookRepoStub) Save(b model.Book) error {
+	return nil
 }
 
 func TestGetDetail(t *testing.T) {
-	ja := jsonassert.New(t)
-
 	e := echo.New()
-	req := httptest.NewRequest(echo.GET, "/", nil)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
-	c.SetPath("/books/:id")
-	c.SetParamNames("id")
-	c.SetParamValues("1")
+	brs := &BookRepoStub{}
+	h := NewBookHandler(brs)
+	e.GET("/books/:id", h.GetDetail)
 
-	brStub := &BookRepoStub{}
-	h := NewBookHandler(brStub)
-
-	if assert.NoError(t, h.GetDetail(c)) {
-		assert.Equal(t, http.StatusOK, rec.Code)
-		ja.Assertf(
-			rec.Body.String(), `
-      {
-        "ID": "<<PRESENCE>>",
-        "CreatedAt": "<<PRESENCE>>",
-        "UpdatedAt": "<<PRESENCE>>",
-        "DeletedAt": null,
-        "Title": "Go言語の本",
-        "Author": "誰か"
-			}`,
-		)
-	}
+	apitest.New().
+		Handler(e).
+		Get("/books/1").
+		Expect(t).
+		Body(`
+			{
+				"ID": 1,
+				"CreatedAt": "2021-01-01T00:00:00Z",
+				"UpdatedAt": "2021-01-01T00:00:00Z",
+				"DeletedAt": null,
+				"Title": "Go言語の本",
+				"Author": "誰か"
+			}
+		`).
+		Status(http.StatusOK).
+		End()
 }
 
 func TestGetIndex(t *testing.T) {
-	ja := jsonassert.New(t)
-
 	e := echo.New()
-	req := httptest.NewRequest(echo.GET, "/", nil)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
-	c.SetPath("/books")
+	brs := &BookRepoStub{}
+	h := NewBookHandler(brs)
+	e.GET("/books", h.GetIndex)
 
-	brStub := &BookRepoStub{}
-	h := NewBookHandler(brStub)
+	apitest.New().
+		Handler(e).
+		Get("/books").
+		Expect(t).
+		Body(`
+			{
+				"Books": [
+					{
+						"ID": 1,
+						"CreatedAt": "2021-01-01T00:00:00Z",
+						"UpdatedAt": "2021-01-01T00:00:00Z",
+						"DeletedAt": null,
+						"Title": "Go言語の本",
+						"Author": "誰か"
+					},
+					{
+						"ID": 2,
+						"CreatedAt": "2021-01-01T00:00:00Z",
+						"UpdatedAt": "2021-01-01T00:00:00Z",
+						"DeletedAt": null,
+						"Title": "Go言語の本2",
+						"Author": "誰か2"
+					}
+				]
+			}
+		`).
+		Status(http.StatusOK).
+		End()
+}
 
-	if assert.NoError(t, h.GetIndex(c)) {
-		assert.Equal(t, http.StatusOK, rec.Code)
-		ja.Assertf(
-			rec.Body.String(), `
-    		{
-					"Books": [
-						{
-							"ID": "<<PRESENCE>>",
-							"CreatedAt": "<<PRESENCE>>",
-							"UpdatedAt": "<<PRESENCE>>",
-							"DeletedAt": null,
-							"Title": "Go言語の本",
-							"Author": "誰か"
-						},
-						{
-							"ID": "<<PRESENCE>>",
-							"CreatedAt": "<<PRESENCE>>",
-							"UpdatedAt": "<<PRESENCE>>",
-							"DeletedAt": null,
-							"Title": "Go言語の本2",
-							"Author": "誰か2"
-						}
-					]
-				}`,
-		)
-	}
+func TestPost(t *testing.T) {
+	e := echo.New()
+	brs := &BookRepoStub{}
+	h := NewBookHandler(brs)
+	e.POST("/books", h.Post)
+
+	apitest.New().
+		Handler(e).
+		Post("/books").
+		FormData("title", "新規書籍名").
+		FormData("author", "新規著者").
+		Expect(t).
+		Status(http.StatusOK).
+		End()
+}
+
+func TestPut(t *testing.T) {
+	e := echo.New()
+	brs := &BookRepoStub{}
+	h := NewBookHandler(brs)
+	e.PUT("/books/:id", h.Put)
+
+	apitest.New().
+		Handler(e).
+		Put("/books/1").
+		Expect(t).
+		Status(http.StatusOK).
+		End()
 }

@@ -22,15 +22,35 @@ func NewBookHandler(br repo.BookRepo) *BookHandler {
 }
 
 func (bh *BookHandler) GetIndex(c echo.Context) error {
-	books := bh.bookRepo.FindAll()
+	bks, _ := bh.bookRepo.FindAll()
 	b := &resultLists{
-		Books: books,
+		Books: bks,
 	}
 	return c.JSON(http.StatusOK, b)
 }
 
 func (bh *BookHandler) GetDetail(c echo.Context) error {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
-	b := bh.bookRepo.FindByID(id)
+	b, _ := bh.bookRepo.FindByID(id)
+	return c.JSON(http.StatusOK, b)
+}
+
+func (bh *BookHandler) Post(c echo.Context) error {
+	t := c.FormValue("title")
+	a := c.FormValue("author")
+	b := model.Book{Title: t, Author: a}
+	bh.bookRepo.Create(b)
+	return c.JSON(http.StatusOK, b)
+}
+
+func (bh *BookHandler) Put(c echo.Context) error {
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+	b, _ := bh.bookRepo.FindByID(id)
+
+	t := c.FormValue("title")
+	a := c.FormValue("author")
+
+	b = model.Book{Title: t, Author: a}
+	bh.bookRepo.Save(b)
 	return c.JSON(http.StatusOK, b)
 }

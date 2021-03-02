@@ -42,7 +42,4 @@ func TestBookRepositoryTestSuite(t *testing.T) {
 func (suite *BookRepositoryTestSuite) TestCreate() {
 	suite.Run("get a book", func() {
 	})
-
-	suite.Run("get a books", func() {
-	})
 }
