@@ -40,11 +40,11 @@ func (u *BookRepoStub) FindAll() ([]model.Book, error) {
 	return bks, nil
 }
 
-func (u *BookRepoStub) Create(b model.Book) error {
+func (u *BookRepoStub) Create(b *model.Book) error {
 	return nil
 }
 
-func (u *BookRepoStub) Save(b model.Book) error {
+func (u *BookRepoStub) Save(b *model.Book) error {
 	return nil
 }
 

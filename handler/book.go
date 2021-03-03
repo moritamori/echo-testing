@@ -50,7 +50,7 @@ func (bh *BookHandler) Post(c echo.Context) error {
 	if err := validator.New().Struct(b); err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
-	if err := bh.bookRepo.Create(b); err != nil {
+	if err := bh.bookRepo.Create(&b); err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 	return c.JSON(http.StatusOK, b)
@@ -67,7 +67,7 @@ func (bh *BookHandler) Put(c echo.Context) error {
 	if err := validator.New().Struct(b); err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
-	if err := bh.bookRepo.Save(b); err != nil {
+	if err := bh.bookRepo.Save(&b); err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 	return c.JSON(http.StatusOK, b)

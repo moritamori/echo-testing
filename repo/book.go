@@ -12,8 +12,8 @@ type BookRepoImpl struct {
 type BookRepo interface {
 	FindByID(uint64) (model.Book, error)
 	FindAll() ([]model.Book, error)
-	Create(book model.Book) error
-	Save(book model.Book) error
+	Create(book *model.Book) error
+	Save(book *model.Book) error
 }
 
 func (br *BookRepoImpl) FindByID(id uint64) (model.Book, error) {
@@ -28,12 +28,12 @@ func (br *BookRepoImpl) FindAll() ([]model.Book, error) {
 	return bks, err
 }
 
-func (br *BookRepoImpl) Create(book model.Book) error {
+func (br *BookRepoImpl) Create(book *model.Book) error {
 	err := br.DB.Create(book).Error
 	return err
 }
 
-func (br *BookRepoImpl) Save(book model.Book) error {
+func (br *BookRepoImpl) Save(book *model.Book) error {
 	err := br.DB.Save(&book).Error
 	return err
 }
