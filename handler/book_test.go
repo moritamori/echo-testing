@@ -114,6 +114,7 @@ func TestPost(t *testing.T) {
 	h := NewBookHandler(brs)
 	e.POST("/books", h.Post)
 
+	// 正常系
 	apitest.New().
 		Handler(e).
 		Post("/books").
@@ -121,6 +122,16 @@ func TestPost(t *testing.T) {
 		FormData("author", "新規著者").
 		Expect(t).
 		Status(http.StatusOK).
+		End()
+
+	// 異常系
+	apitest.New().
+		Handler(e).
+		Post("/books").
+		FormData("title", "").
+		FormData("author", "新規著者").
+		Expect(t).
+		Status(http.StatusBadRequest).
 		End()
 }
 
@@ -130,10 +141,23 @@ func TestPut(t *testing.T) {
 	h := NewBookHandler(brs)
 	e.PUT("/books/:id", h.Put)
 
+	// 正常系
 	apitest.New().
 		Handler(e).
 		Put("/books/1").
+		FormData("title", "更新後書籍名").
+		FormData("author", "更新後著者").
 		Expect(t).
 		Status(http.StatusOK).
+		End()
+
+	// 異常系
+	apitest.New().
+		Handler(e).
+		Put("/books/1").
+		FormData("title", "").
+		FormData("author", "更新後著者").
+		Expect(t).
+		Status(http.StatusBadRequest).
 		End()
 }

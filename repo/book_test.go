@@ -38,8 +38,26 @@ func TestBookRepositoryTestSuite(t *testing.T) {
 	suite.Run(t, new(BookRepositoryTestSuite))
 }
 
+// FindByIDのテスト
+func (suite *BookRepositoryTestSuite) TestFindByID() {
+	suite.Run("find a book", func() {
+	})
+}
+
+// FindAllのテスト
+func (suite *BookRepositoryTestSuite) TestFindAll() {
+	suite.Run("find all book", func() {
+	})
+}
+
 // Createのテスト
 func (suite *BookRepositoryTestSuite) TestCreate() {
-	suite.Run("get a book", func() {
+	suite.Run("create a book", func() {
+	})
+}
+
+// Saveのテスト
+func (suite *BookRepositoryTestSuite) TestSave() {
+	suite.Run("save a book", func() {
 	})
 }
