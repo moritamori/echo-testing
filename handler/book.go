@@ -28,8 +28,8 @@ func (bh *BookHandler) GetIndex(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
-	b := &resultLists{Books: bks}
-	return c.JSON(http.StatusOK, b)
+	rl := &resultLists{Books: bks}
+	return c.JSON(http.StatusOK, rl)
 }
 
 func (bh *BookHandler) GetDetail(c echo.Context) error {
